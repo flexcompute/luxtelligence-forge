@@ -9,6 +9,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.10', '3.13']
+        pdk: ['lnoi400', 'ltoi300']
     name: Test for ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -19,6 +20,7 @@ jobs:
           cache: 'pip'
       - name: Install Python dependencies
         run: |
+          cd ${{ matrix.pdk }}
           python -m pip install --upgrade pip
           pip install --upgrade setuptools wheel pip-tools
           python -m piptools compile --resolver=backtracking --extra=test -o requirements.txt pyproject.toml
