@@ -97,7 +97,7 @@ def ltoi300(
     },
     opening: pft.Medium = td.Medium(permittivity=1.0, name="Opening"),
 ) -> pf.Technology:
-    """Create a technology for the LNOI400 PDK.
+    """Create a technology for the LTOI300 PDK.
 
     Args:
         lt_thickness: LiTaO₃ layer thickness.
@@ -217,10 +217,8 @@ def ltoi300(
         extrusion_specs.append(pf.ExtrusionSpec(bounds, si, (-pf.Z_INF, -box_thickness)))
 
     technology = pf.Technology(
-        "LTOI300", "1.0.0.dev1", layers, extrusion_specs, {}, opening if include_beol else sio2
+        "LTOI300", "1.0.0", layers, extrusion_specs, {}, opening if include_beol else sio2
     )
-    # TODO: Should we define these as multimode?
-    # TODO: Clading layers might be too wide
     technology.ports = {
         "RWG900": pf.PortSpec(
             description="LT single mode rib for C band",

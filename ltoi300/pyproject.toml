@@ -1,6 +1,6 @@
 [project]
 name = "luxtelligence-ltoi300-forge"
-version = "1.0.0.dev1"
+version = "1.0.0"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LTOI300 PDK implementation for PhotonForge"
 readme = "README.md"

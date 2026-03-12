@@ -35,11 +35,13 @@ components can be discovered by:
 
     dir(lxt.component)
     
+    print(lxt.component_names)
+    
     pdk_component = lxt.component.mmi1x2()
 
 
-Utility functions `cpw_spec` and `place_edge_couplers` are also available for
-generating CPW port specifications and placing edge couplers at chip boudaries.
+A utility function `place_edge_couplers` is available for placing edge couplers
+at chip boudaries.
 
 More information can be obtained in the documentation for each function:
 

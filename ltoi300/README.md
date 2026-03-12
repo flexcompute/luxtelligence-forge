@@ -28,27 +28,25 @@ default:
 
 
 The `ltoi300` function creates a parametric technology and accepts a number of
-parameters to fine-tune the technology.
+parameters to fine-tune the technology. In particular, setting `include_beol`
+to `False` is useful when simulating passive components to reduce the
+simulation domain size.
 
 PDK components are available in the `component` submodule. The list of
 components can be discovered by:
 
     dir(lxt.component)
     
-    pdk_component = lxt.component.mmi1x2()
+    print(lxt.component_names)
 
+    pdk_component = lxt.component.mmi1x2_oband()
 
-Utility functions `cpw_spec` and `place_edge_couplers` are also available for
-generating CPW port specifications and placing edge couplers at chip boudaries.
 
 More information can be obtained in the documentation for each function:
 
     help(lxt.ltoi300)
 
-    help(lxt.component.mmi1x2)
-
-    help(lxt.place_edge_couplers)
-
+    help(lxt.component.mmi1x2_oband)
 
 Finally, an extrusion demo for the technology can be seen by running:
 
@@ -67,6 +65,6 @@ with smooth boundaries.
 
 ## Changelog
 
-### 1.0.0 - Unreleased
+### 1.0.0 - 2026-03-12
 
 - Initial release
