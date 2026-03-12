@@ -1,6 +1,7 @@
 import tidy3d as td
 import photonforge as pf
 import photonforge.typing as pft
+from ._layers import _layers
 
 # RMS error: 5.1e-08
 ln_o_fit = td.PoleResidue(
@@ -84,50 +85,10 @@ def lnoi400(
         opening: Medium for openings.
 
     Returns:
-        Technology: E-Beam PDK technology definition.
+        Technology: LNOI400 technology definition.
     """
     # Layers
-    layers = {
-        "LN_RIDGE": pf.LayerSpec(
-            layer=(2, 0), description="LN etch (ridge)", color="#7c40d618", pattern="//"
-        ),
-        "LN_RIDGE_P": pf.LayerSpec(
-            layer=(2, 1),
-            description="LN etch (ridge, periodic features)",
-            color="#45099e18",
-            pattern="//",
-        ),
-        "LN_SLAB": pf.LayerSpec(
-            layer=(3, 0), description="LN etch (full)", color="#346ebf18", pattern="\\"
-        ),
-        "SLAB_NEGATIVE": pf.LayerSpec(
-            layer=(3, 1), description="Slab etch negative", color="#81aae318", pattern="\\\\"
-        ),
-        "LABELS": pf.LayerSpec(
-            layer=(4, 0), description="Labels (LN etch)", color="#757b8518", pattern="solid"
-        ),
-        "CHIP_CONTOUR": pf.LayerSpec(
-            layer=(6, 0), description="Usable floorplan area", color="#6d461318", pattern="hollow"
-        ),
-        "CHIP_EXCLUSION_ZONE": pf.LayerSpec(
-            layer=(6, 1), description="Final chip boundaries", color="#77964518", pattern="hollow"
-        ),
-        "TL": pf.LayerSpec(
-            layer=(21, 0), description="Metal transmission lines", color="#ebb73418", pattern="+"
-        ),
-        "HT": pf.LayerSpec(
-            layer=(21, 1), description="Metal heaters", color="#d75c1b18", pattern=":"
-        ),
-        "ALIGN": pf.LayerSpec(
-            layer=(31, 0), description="Alignment markers (LN etch)", color="#d4467c18", pattern="+"
-        ),
-        "DOC": pf.LayerSpec(
-            layer=(201, 0),
-            description="Labels for GDS layout (not fabricated)",
-            color="#857b7518",
-            pattern="solid",
-        ),
-    }
+    layers = {k: v.copy() for k, v in _layers.items()}
 
     # Extrusion specifications
     bounds = pf.MaskSpec()  # Empty mask for all chip bounds
