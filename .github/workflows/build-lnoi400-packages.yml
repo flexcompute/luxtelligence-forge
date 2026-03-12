@@ -1,4 +1,4 @@
-name: Package Builder
+name: LNOI400 Package Builder
 
 on:
   push:
