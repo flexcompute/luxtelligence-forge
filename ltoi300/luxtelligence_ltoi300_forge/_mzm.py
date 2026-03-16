@@ -205,6 +205,7 @@ def cpw_termination(
     name: str = "",
 ) -> pf.Component:
     c = pf.Component(name, technology)
+    c.properties.__thumbnail__ = "electrical_termination"
 
     central_width, gap, ground_width, _, _ = _cpw_info(cpw_spec)
     y0 = pf.snap_to_grid(0.5 * central_width)
@@ -336,6 +337,8 @@ def cpw_pad(
     wg.add_port([pf.Port((0, y0), 0, opt_spec), pf.Port((x1, y1), 180, opt_spec.inverted())])
 
     c = pf.Component(name, technology)
+    c.properties.__thumbnail__ = "bondpad"
+
     c.add(pf.Reference(wg, x_reflection=True), pf.Reference(wg))
     c.add_reference_ports()
 
@@ -519,6 +522,7 @@ def optical_combiner(
     name: str = "",
 ):
     c = pf.Component(name, technology)
+    c.properties.__thumbnail__ = "black_box"
 
     mmi_ref = c.add_reference(mmi)
     c.add_port(mmi_ref["P0"])
@@ -741,6 +745,8 @@ def base_mzm(
     comb_port = "P3" if len(mmi_ports) > 3 else "P2"
 
     c = pf.Component(name, technology)
+    c.properties.__thumbnail__ = "mzm"
+
     cpw_ref = c.add_reference(cpw)
     pad0 = c.add_reference(pad).connect("E0", cpw_ref["E0"])
     comb1 = c.add_reference(comb).connect(comb_port, pad0["P3"])
