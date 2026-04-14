@@ -34,15 +34,4 @@ def plot_cross_section(technology=None):
     ax = pf.tidy3d_plot(c, y=0)
     ax.set(title=c.technology.name)
 
-    # Add annotations
-    # kwargs = {"arrowprops": {"arrowstyle": "-", "color": "black", "linewidth": 1}}
-    #
-    # ax.text(0, 0.5, "", ha="center")
-    # ax.text(10, 0.5, "E600", ha="center")
-    # ax.text(20, 0.5, "E1700", ha="center")
-    #
-    # ax.text(-10, 1, "Met1", ha="center")
-    # ax.text(-10, 2.5, "Met2", ha="center")
-    # ax.annotate("Iso", (-6, 0.2), (-5, 0.5), **kwargs)
-
     return ax

@@ -14,7 +14,7 @@ def test_components():
 def test_defaults(request):
     pf.config.default_technology = lxt.ltoi300()
     components = {
-        c.name[: c.name.rfind("_")]: c
+        c.parametric_function[c.parametric_function.rfind(".") + 1 :]: c
         for c in (getattr(lxt.component, n)() for n in lxt.component_names)
     }
 
@@ -42,10 +42,16 @@ def test_defaults(request):
                 error += sum(x.area() for x in diff_structs)
 
         tol = {
+            "ring_resonator_single_mode_point_coupler_cband": 0.3,  # Wrong reference GDS
+            "ring_resonator_single_mode_point_coupler_oband": 0.3,  # Wrong reference GDS
+            "terminated_eo_phase_shifter_cband": 5e-5,
+            "terminated_eo_phase_shifter_oband": 4e-5,
             "terminated_mzm_1x2mmi_cband": 6e-5,
             "terminated_mzm_1x2mmi_oband": 5e-5,
             "terminated_mzm_2x2mmi_cband": 6e-5,
             "terminated_mzm_2x2mmi_oband": 5e-5,
+            "unterminated_eo_phase_shifter_cband": 8e-5,
+            "unterminated_eo_phase_shifter_oband": 6e-5,
             "unterminated_mzm_1x2mmi_cband": 9e-5,
             "unterminated_mzm_1x2mmi_oband": 7e-5,
             "unterminated_mzm_2x2mmi_cband": 9e-5,

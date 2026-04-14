@@ -1,5 +1,6 @@
 import pathlib
 import subprocess
+import sys
 import xml.etree.ElementTree as et
 
 
@@ -112,8 +113,6 @@ extra = [
 ]
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         raise RuntimeError(
             "Please run the script providing the path the layer properties file: ltio300.lyp"

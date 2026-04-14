@@ -17,6 +17,7 @@ def ring_resonator(
     name,
     model,
     inner_models,
+    heal_distance,
 ):
     if technology is None:
         technology = pf.config.default_technology
@@ -37,8 +38,8 @@ def ring_resonator(
     c = pf.Component(name, technology=technology)
     c.properties.__thumbnail__ = "mrr"
 
-    bus_core_width, *_ = _core_and_clad_info(bus_spec, technology)
-    ring_core_width, *_ = _core_and_clad_info(ring_spec, technology)
+    bus_core_width, *_, bus_clad_layer = _core_and_clad_info(bus_spec, technology)
+    ring_core_width, *_, ring_clad_layer = _core_and_clad_info(ring_spec, technology)
 
     coupled = pf.parametric.ring_coupler(
         port_spec=(bus_spec, ring_spec),
@@ -66,6 +67,12 @@ def ring_resonator(
         model=inner_models[1],
     )
 
+    for layer in {bus_clad_layer, ring_clad_layer}:
+        for ring_side in (coupled, uncoupled):
+            healed = pf.heal(ring_side.get_structures(layer), -heal_distance)
+            ring_side.filter_layers([layer], False, True)
+            ring_side.add(layer, *healed)
+
     r0 = pf.Reference(coupled, rotation=90)
     r1 = pf.Reference(uncoupled).connect("P0", r0["P3"])
     c.add(r0, r1)
@@ -91,6 +98,7 @@ def ring_resonator_single_mode_point_coupler_oband(
     gap: pft.Coordinate = 1.05,
     ring_radius: pft.PositiveDimension = 200.0,
     bus_length: pft.PositiveDimension | None = None,
+    heal_distance: pft.Coordinate = 1.0,
     technology: pf.Technology | None = None,
     name: str = "",
     model: pf.Model = pf.CircuitModel(),
@@ -107,6 +115,7 @@ def ring_resonator_single_mode_point_coupler_oband(
         slab_width: Slab width for the ring waveguide.
         bus_length: Length of the bus waveguide. If ``None``, defaults to
           ``2 * ring_radius``.
+        heal_distance: Distance used to heal acute angles.
         technology: Component technology. If ``None``, the default
           technology is used.
         name: Component name.
@@ -128,6 +137,7 @@ def ring_resonator_single_mode_point_coupler_oband(
         name,
         model,
         inner_models,
+        heal_distance,
     )
 
 
@@ -150,6 +160,7 @@ def ring_resonator_multimode_point_coupler_oband(
     gap: pft.Coordinate = 0.75,
     ring_radius: pft.PositiveDimension = 200.0,
     bus_length: pft.PositiveDimension | None = None,
+    heal_distance: pft.Coordinate = 1.0,
     technology: pf.Technology | None = None,
     name: str = "",
     model: pf.Model = pf.CircuitModel(),
@@ -166,6 +177,7 @@ def ring_resonator_multimode_point_coupler_oband(
         slab_width: Slab width for the ring waveguide.
         bus_length: Length of the bus waveguide. If ``None``, defaults to
           ``2 * ring_radius``.
+        heal_distance: Distance used to heal acute angles.
         technology: Component technology. If ``None``, the default
           technology is used.
         name: Component name.
@@ -187,6 +199,7 @@ def ring_resonator_multimode_point_coupler_oband(
         name,
         model,
         inner_models,
+        heal_distance,
     )
 
 
@@ -198,6 +211,7 @@ def ring_resonator_single_mode_point_coupler_cband(
     gap: pft.Coordinate = 1.5,
     ring_radius: pft.PositiveDimension = 200.0,
     bus_length: pft.PositiveDimension | None = None,
+    heal_distance: pft.Coordinate = 1.0,
     technology: pf.Technology | None = None,
     name: str = "",
     model: pf.Model = pf.CircuitModel(),
@@ -214,6 +228,7 @@ def ring_resonator_single_mode_point_coupler_cband(
         slab_width: Slab width for the ring waveguide.
         bus_length: Length of the bus waveguide. If ``None``, defaults to
           ``2 * ring_radius``.
+        heal_distance: Distance used to heal acute angles.
         technology: Component technology. If ``None``, the default
           technology is used.
         name: Component name.
@@ -235,6 +250,7 @@ def ring_resonator_single_mode_point_coupler_cband(
         name,
         model,
         inner_models,
+        heal_distance,
     )
 
 
@@ -257,6 +273,7 @@ def ring_resonator_multimode_point_coupler_cband(
     gap: pft.Coordinate = 1.2,
     ring_radius: pft.PositiveDimension = 200.0,
     bus_length: pft.PositiveDimension | None = None,
+    heal_distance: pft.Coordinate = 1.0,
     technology: pf.Technology | None = None,
     name: str = "",
     model: pf.Model = pf.CircuitModel(),
@@ -273,6 +290,7 @@ def ring_resonator_multimode_point_coupler_cband(
         slab_width: Slab width for the ring waveguide.
         bus_length: Length of the bus waveguide. If ``None``, defaults to
           ``2 * ring_radius``.
+        heal_distance: Distance used to heal acute angles.
         technology: Component technology. If ``None``, the default
           technology is used.
         name: Component name.
@@ -294,4 +312,5 @@ def ring_resonator_multimode_point_coupler_cband(
         name,
         model,
         inner_models,
+        heal_distance,
     )

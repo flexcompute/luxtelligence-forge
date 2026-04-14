@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LTOI300 PDK implementation for PhotonForge"
 readme = "README.md"
-dependencies = ["photonforge >= 1.3.2"]
+dependencies = ["photonforge >= 1.4.0"]
 
 [project.optional-dependencies]
 test = ["pytest >= 7.2"]
