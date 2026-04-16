@@ -115,7 +115,7 @@ extra = [
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise RuntimeError(
-            "Please run the script providing the path the layer properties file: ltio300.lyp"
+            "Please run the script providing the path the layer properties file: ltoi300.lyp"
         )
 
     tree = et.parse(sys.argv[1])

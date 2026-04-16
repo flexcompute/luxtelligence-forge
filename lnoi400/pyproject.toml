@@ -4,7 +4,7 @@ version = "1.4.0"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LNOI400 PDK implementation for PhotonForge"
 readme = "README.md"
-dependencies = ["photonforge >= 1.2.2"]
+dependencies = ["photonforge >= 1.4.0"]
 
 [project.optional-dependencies]
 test = ["pytest >= 7.2"]

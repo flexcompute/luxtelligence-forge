@@ -10,7 +10,7 @@ def plot_cross_section(technology=None):
     import photonforge as pf
 
     if technology is None:
-        technology = ltoi300(include_substrate=True, include_beol=True)
+        technology = ltoi300()
 
     c = pf.Component("Extrusion test", technology)
     c.add(

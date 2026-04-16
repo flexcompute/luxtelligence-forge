@@ -1,7 +1,11 @@
+from typing import Literal
+
 import tidy3d as td
 import photonforge as pf
 import photonforge.typing as pft
 from ._layers import _layers
+
+_Medium = pft.Medium | dict[Literal["optical", "electrical"], pft.Medium]
 
 # RMS error: 5.1e-08
 ln_o_fit = td.PoleResidue(
@@ -37,30 +41,45 @@ def lnoi400(
     box_thickness: pft.PositiveDimension = 4.7,
     tl_thickness: pft.PositiveDimension = 0.9,
     tl_separation: pft.PositiveDimension = 1,
-    include_substrate: bool = False,
-    include_top_opening: bool = False,
-    sio2: dict[str, pft.Medium] = {
-        "optical": td.material_library["SiO2"]["Palik_Lossless"],
-        "electrical": td.Medium(permittivity=3.9, name="SiO2"),
+    sio2: _Medium = {
+        "optical": td.material_library["SiO2"]["Palik_Lossless"].updated_copy(
+            viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+        ),
+        "electrical": td.Medium(
+            permittivity=3.9, name="SiO2", viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+        ),
     },
-    si: dict[str, pft.Medium] = {
-        "optical": td.material_library["cSi"]["Li1993_293K"],
-        "electrical": td.Medium(permittivity=11.7, name="Si"),
+    si: _Medium = {
+        "optical": td.material_library["cSi"]["Li1993_293K"].updated_copy(
+            viz_spec=td.VisualizationSpec(facecolor="#060534")
+        ),
+        "electrical": td.Medium(
+            permittivity=11.7, name="Si", viz_spec=td.VisualizationSpec(facecolor="#060534")
+        ),
     },
     ln: dict[str, pft.Medium] = {
-        "optical": td.AnisotropicMedium(xx=ln_o_fit, yy=ln_e_fit, zz=ln_o_fit),
+        "optical": td.AnisotropicMedium(
+            xx=ln_o_fit,
+            yy=ln_e_fit,
+            zz=ln_o_fit,
+            viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
+        ),
         "electrical": td.AnisotropicMedium(
             xx=td.Medium(permittivity=38),
             yy=td.Medium(permittivity=28),
             zz=td.Medium(permittivity=38),
+            viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
         ),
     },
-    tl_metal: dict[str, pft.Medium] = {
-        "optical": td.material_library["Au"]["Olmon2012evaporated"],
+    metal: dict[str, pft.Medium] = {
+        "optical": td.material_library["Au"]["Olmon2012evaporated"].updated_copy(
+            viz_spec=td.VisualizationSpec(facecolor="#f8b50c")
+        ),
         "electrical": td.LossyMetalMedium(
             conductivity=41,
             frequency_range=[0.1e9, 100e9],
             fit_param=td.SurfaceImpedanceFitterParam(max_num_poles=16),
+            viz_spec=td.VisualizationSpec(facecolor="#f8b50c"),
         ),
     },
     opening: pft.Medium = td.Medium(permittivity=1.0, name="Opening"),
@@ -74,14 +93,10 @@ def lnoi400(
         box_thickness: Thickness of the bottom oxide clad.
         tl_thickness: TL layer thickness.
         tl_separation: Separation between the LiNbO₃ and TL layers.
-        include_substrate: Flag indicating whether or not to include the
-          silicon substrate.
-        include_top_opening: Flag indicating whether or not to include the
-          open region above the last extrusion layer.
         sio2: Oxide and background medium.
         si: Silicon medium.
         ln: LiNbO₃ medium.
-        tl_metal: TL and heater metal medium.
+        metal: TL and heater metal medium.
         opening: Medium for openings.
 
     Returns:
@@ -101,18 +116,14 @@ def lnoi400(
     z_top = z_tl + tl_thickness
 
     extrusion_specs = [
+        pf.ExtrusionSpec(bounds, si, (-pf.Z_INF, 0)),
+        pf.ExtrusionSpec(bounds, sio2, (-box_thickness, z_top)),
         pf.ExtrusionSpec(bounds, ln, (0, slab_thickness), 0),
         pf.ExtrusionSpec(full_ln_mask, ln, (0, ln_thickness), sidewall_angle),
         pf.ExtrusionSpec(slab_etch_mask, sio2, (0, ln_thickness), -sidewall_angle),
-        pf.ExtrusionSpec(tl_mask, tl_metal, (z_tl, z_top)),
-        pf.ExtrusionSpec(ht_mask, tl_metal, (z_tl, z_top)),
+        pf.ExtrusionSpec(tl_mask, metal, (z_tl, z_top)),
+        pf.ExtrusionSpec(ht_mask, metal, (z_tl, z_top)),
     ]
-
-    if include_substrate:
-        extrusion_specs.append(pf.ExtrusionSpec(bounds, si, (-pf.Z_INF, -box_thickness)))
-
-    if include_top_opening:
-        extrusion_specs.append(pf.ExtrusionSpec(bounds, opening, (z_top, pf.Z_INF)))
 
     rwg_port_gap = min(1.5, box_thickness)
     rwg_port_limits = (-rwg_port_gap, ln_thickness + rwg_port_gap)
@@ -122,18 +133,18 @@ def lnoi400(
     # default T-rail full height
     t_height = 3
 
-    technology = pf.Technology("LNOI400", "1.4.0", layers, extrusion_specs, {}, sio2)
+    technology = pf.Technology("LNOI400", "1.4.0", layers, extrusion_specs, {}, opening)
     technology.ports = {
         "RWG1000": pf.PortSpec(
             description="LN single mode ridge waveguide for C-band, TE mode",
             width=5,
             limits=rwg_port_limits,
-            num_modes=2,
+            num_modes=1,
             target_neff=2.2,
             path_profiles=((1, 0, (2, 0)), (10, 0, (3, 0))),
         ),
         "RWG3000": pf.PortSpec(
-            description="LN multimode mode ridge for C-band, TE mode",
+            description="LN multimode mode ridge for C-band",
             width=8,
             limits=rwg_port_limits,
             num_modes=5,

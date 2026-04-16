@@ -121,9 +121,9 @@ def place_edge_couplers(
     side_spec = side_spec[0].upper()
 
     if coupler is None:
-        from .component import double_linear_inverse_taper
+        from .component import edge_coupler
 
-        coupler = double_linear_inverse_taper()
+        coupler = edge_coupler()
 
     ports = sorted(coupler.ports.items())
     port = ports[0][1]

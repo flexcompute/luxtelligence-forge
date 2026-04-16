@@ -28,9 +28,7 @@ default:
 
 
 The `ltoi300` function creates a parametric technology and accepts a number of
-parameters to fine-tune the technology. In particular, setting `include_beol`
-to `False` is useful when simulating passive components to reduce the
-simulation domain size.
+parameters to fine-tune the technology.
 
 PDK components are available in the `component` submodule. The list of
 components can be discovered by:
@@ -64,6 +62,11 @@ with smooth boundaries.
 
 
 ## Changelog
+
+### Unreleased
+
+- Added missing thumbnails for LTOI300 MZM components.
+- Added phase shifter components and updated MZM implementations.
 
 ### 1.0.0 - 2026-03-12
 

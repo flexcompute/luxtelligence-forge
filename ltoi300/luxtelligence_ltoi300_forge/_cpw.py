@@ -153,7 +153,7 @@ def via_fill(
     margin: pft.Dimension,
     fillet_radius: pft.Dimension,
     technology: pf.Technology | None,
-) -> pf.Reference:
+) -> list[pf.Reference]:
     size = area.size - 2 * margin
 
     if via_size is None:
@@ -175,8 +175,10 @@ def via_fill(
             fillet_radius=fillet_radius,
             technology=technology,
         )
+        # TODO: Until PDA suports reference arrays, we need to dismember these
         vias = pf.Reference(v, columns=cols, rows=rows, spacing=(period, period))
         vias.x_mid, vias.y_mid = area.center
+        vias = vias.get_repetition()
     else:
         v = via(
             layer=layer,
@@ -184,7 +186,7 @@ def via_fill(
             fillet_radius=fillet_radius,
             technology=technology,
         )
-        vias = pf.Reference(v, area.center)
+        vias = [pf.Reference(v, area.center)]
 
     return vias
 
@@ -263,15 +265,21 @@ def cpw_termination(
         "HRL",
         merged,
         *(
-            via_fill(m1_m2_layer, rect, via_size, via_gap, via_margin, fillet_radius, technology)
+            via
             for rect in m1_rects
+            for via in via_fill(
+                m1_m2_layer, rect, via_size, via_gap, via_margin, fillet_radius, technology
+            )
         ),
         *(
-            via_fill(m2_hrl_layer, rect, None, via_gap, via_margin, fillet_radius, technology)
+            via
             for rect in (
                 pf.Rectangle((x1, -y0), (x2, y0)),
                 pf.Rectangle((x1, -y2), (x2, -y1)),
                 pf.Rectangle((x1, y1), (x2, y2)),
+            )
+            for via in via_fill(
+                m2_hrl_layer, rect, None, via_gap, via_margin, fillet_radius, technology
             )
         ),
     )
@@ -391,11 +399,14 @@ def cpw_pad(
     layer = c.technology.layers["VIA_M1_M2"].layer
     c.add(
         *(
-            via_fill(layer, rect, via_size, via_gap, via_margin, via_fillet_radius, technology)
+            via
             for rect in (
                 pf.Rectangle((x1, -y4), (x2, y4)),
                 pf.Rectangle((x1, -y3), (x2, -y5)),
                 pf.Rectangle((x1, y5), (x2, y3)),
+            )
+            for via in via_fill(
+                layer, rect, via_size, via_gap, via_margin, via_fillet_radius, technology
             )
         )
     )

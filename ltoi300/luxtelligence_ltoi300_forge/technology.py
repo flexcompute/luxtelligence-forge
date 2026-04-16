@@ -43,8 +43,6 @@ def ltoi300(
     m2_oxide_thickness: pft.PositiveDimension = 0.3,
     box_thickness: pft.PositiveDimension = 7.0,
     via_sidewall_angle: pft.Angle = 45,
-    include_substrate: bool = False,
-    include_beol: bool = True,
     sio2: _Medium = {
         "optical": td.material_library["SiO2"]["Palik_Lossless"].updated_copy(
             viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
@@ -111,9 +109,6 @@ def ltoi300(
         m2_oxide_thickness: Additional oxide thickness below M2.
         box_thickness: Thickness of the bottom oxide clad.
         via_sidewall_angle: Sidewall angle  for via openings.
-        include_substrate: Flag indicating whether or not to include the
-          silicon substrate.
-        include_beol: Flag indicating whether or not to include the metal
           and via layers.
         sio2: Oxide and background medium.
         si: Silicon medium.
@@ -133,92 +128,80 @@ def ltoi300(
 
     z_m1_top = slab_thickness + m1_thickness
 
-    if include_beol:
-        z_hrm = slab_thickness + oxide_thickness
-        z_m2 = z_hrm + m2_oxide_thickness
-        z_m2_hrm = z_m2 + hrm_thickness
-        z_m2_m1 = z_m1_top + m1_oxide_thickness
+    z_hrm = slab_thickness + oxide_thickness
+    z_m2 = z_hrm + m2_oxide_thickness
+    z_m2_hrm = z_m2 + hrm_thickness
+    z_m2_m1 = z_m1_top + m1_oxide_thickness
 
-        m1_mask = pf.MaskSpec((20, 0))
-        m2_mask = pf.MaskSpec((22, 0))
-        hrm_mask = pf.MaskSpec((23, 0))
-        v2_mask = pf.MaskSpec((40, 0))
-        v3_mask = pf.MaskSpec((41, 0))
+    m1_mask = pf.MaskSpec((20, 0))
+    m2_mask = pf.MaskSpec((22, 0))
+    hrm_mask = pf.MaskSpec((23, 0))
+    v2_mask = pf.MaskSpec((40, 0))
+    v3_mask = pf.MaskSpec((41, 0))
 
-        # m1_open = m1_mask - (m2_mask + v2_mask**dilation)
-
-        extrusion_specs = [
-            pf.ExtrusionSpec(bounds, sio2, (-pf.Z_INF, 0)),
-            # M2
-            pf.ExtrusionSpec(v2_mask, metal, (z_m1_top, z_m1_top + m2_thickness)),
-            pf.ExtrusionSpec(
-                m2_mask - m1_mask - hrm_mask,
-                metal,
-                (z_m1_top, z_m2 + m2_thickness),
-                via_sidewall_angle,
-            ),
-            pf.ExtrusionSpec(
-                m2_mask * m1_mask - v2_mask,
-                metal,
-                (z_m1_top + m2_thickness, z_m2_m1 + m2_thickness),
-                via_sidewall_angle,
-            ),
-            # First oxide layer
-            pf.ExtrusionSpec(
-                m1_mask - v2_mask,
-                sio2,
-                (z_m1_top, z_m1_top + m1_oxide_thickness),
-                via_sidewall_angle,
-            ),
-            pf.ExtrusionSpec(bounds - m1_mask, sio2, (slab_thickness, z_hrm), via_sidewall_angle),
-            # M2
-            pf.ExtrusionSpec(
-                m2_mask * hrm_mask - v3_mask,
-                metal,
-                (z_hrm, z_m2_hrm + m2_thickness),
-                via_sidewall_angle,
-            ),
-            pf.ExtrusionSpec(
-                v3_mask, metal, (z_hrm + hrm_thickness, z_hrm + hrm_thickness + m2_thickness)
-            ),
-            # Second oxide layer
-            pf.ExtrusionSpec(
-                m2_mask - (m1_mask + v2_mask + v3_mask),
-                sio2,
-                (z_m1_top + m1_oxide_thickness, z_hrm + m2_oxide_thickness),
-                via_sidewall_angle,
-            ),
-            pf.ExtrusionSpec(
-                m2_mask * hrm_mask - v3_mask,
-                sio2,
-                (z_hrm, z_hrm + hrm_thickness + m2_oxide_thickness),
-                via_sidewall_angle,
-            ),
-            # Heater
-            pf.ExtrusionSpec(
-                hrm_mask, hr_metal, (z_hrm, z_hrm + hrm_thickness), via_sidewall_angle
-            ),
-            # M1
-            pf.ExtrusionSpec(m1_mask, metal, (slab_thickness, z_m1_top)),
-        ]
-
+    # m1_open = m1_mask - (m2_mask + v2_mask**dilation)
     full_lt_mask = pf.MaskSpec([(2, 10), (4, 0)], [], "+")
     slab_etch_mask = pf.MaskSpec((3, 11), (3, 10), "-")
 
-    extrusion_specs.extend(
-        [
-            pf.ExtrusionSpec(bounds, lt, (0, slab_thickness), 0),
-            pf.ExtrusionSpec(full_lt_mask, lt, (0, lt_thickness), sidewall_angle),
-            pf.ExtrusionSpec(slab_etch_mask, sio2, (0, lt_thickness), -sidewall_angle),
-        ]
-    )
+    extrusion_specs = [
+        pf.ExtrusionSpec(bounds, si, (-pf.Z_INF, 0)),
+        pf.ExtrusionSpec(bounds, sio2, (-box_thickness, 0)),
+        # M2
+        pf.ExtrusionSpec(v2_mask, metal, (z_m1_top, z_m1_top + m2_thickness)),
+        pf.ExtrusionSpec(
+            m2_mask - m1_mask - hrm_mask,
+            metal,
+            (z_m1_top, z_m2 + m2_thickness),
+            via_sidewall_angle,
+        ),
+        pf.ExtrusionSpec(
+            m2_mask * m1_mask - v2_mask,
+            metal,
+            (z_m1_top + m2_thickness, z_m2_m1 + m2_thickness),
+            via_sidewall_angle,
+        ),
+        # First oxide layer
+        pf.ExtrusionSpec(
+            m1_mask - v2_mask,
+            sio2,
+            (z_m1_top, z_m1_top + m1_oxide_thickness),
+            via_sidewall_angle,
+        ),
+        pf.ExtrusionSpec(bounds - m1_mask, sio2, (slab_thickness, z_hrm), via_sidewall_angle),
+        # M2
+        pf.ExtrusionSpec(
+            m2_mask * hrm_mask - v3_mask,
+            metal,
+            (z_hrm, z_m2_hrm + m2_thickness),
+            via_sidewall_angle,
+        ),
+        pf.ExtrusionSpec(
+            v3_mask, metal, (z_hrm + hrm_thickness, z_hrm + hrm_thickness + m2_thickness)
+        ),
+        # Second oxide layer
+        pf.ExtrusionSpec(
+            m2_mask - (m1_mask + v2_mask + v3_mask),
+            sio2,
+            (z_m1_top + m1_oxide_thickness, z_hrm + m2_oxide_thickness),
+            via_sidewall_angle,
+        ),
+        pf.ExtrusionSpec(
+            m2_mask * hrm_mask - v3_mask,
+            sio2,
+            (z_hrm, z_hrm + hrm_thickness + m2_oxide_thickness),
+            via_sidewall_angle,
+        ),
+        # Heater
+        pf.ExtrusionSpec(hrm_mask, hr_metal, (z_hrm, z_hrm + hrm_thickness), via_sidewall_angle),
+        # M1
+        pf.ExtrusionSpec(m1_mask, metal, (slab_thickness, z_m1_top)),
+        # Optical layers
+        pf.ExtrusionSpec(bounds, lt, (0, slab_thickness), 0),
+        pf.ExtrusionSpec(full_lt_mask, lt, (0, lt_thickness), sidewall_angle),
+        pf.ExtrusionSpec(slab_etch_mask, sio2, (0, lt_thickness), -sidewall_angle),
+    ]
 
-    if include_substrate:
-        extrusion_specs.append(pf.ExtrusionSpec(bounds, si, (-pf.Z_INF, -box_thickness)))
-
-    technology = pf.Technology(
-        "LTOI300", "1.0.0", layers, extrusion_specs, {}, opening if include_beol else sio2
-    )
+    technology = pf.Technology("LTOI300", "1.0.0", layers, extrusion_specs, {}, opening)
     technology.ports = {
         "RWG900": pf.PortSpec(
             description="LT single mode rib for C band",

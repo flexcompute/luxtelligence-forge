@@ -1,6 +1,59 @@
 import pathlib
 import subprocess
+import sys
 import xml.etree.ElementTree as et
+
+
+# Klayout patterns
+patterns = {
+    "0": "solid",  # solid
+    "1": "hollow",  # hollow
+    "2": ":",  # dotted
+    "3": ".",  # coarsely dotted
+    "4": "\\\\",  # left-hatched
+    "5": "\\",  # lightly left-hatched
+    "6": "\\\\",  # strongly left-hatched dense
+    "7": "\\",  # strongly left-hatched sparse
+    "8": "//",  # right-hatched
+    "9": "/",  # lightly right-hatched
+    "10": "//",  # strongly right-hatched dense
+    "11": "/",  # strongly right-hatched sparse
+    "12": "xx",  # cross-hatched
+    "13": "x",  # lightly cross-hatched
+    "14": "+",  # checkerboard 2px
+    "15": "x",  # strongly cross-hatched sparse
+    "16": "xx",  # heavy checkerboard
+    "17": "x",  # hollow bubbles
+    "18": "x",  # solid bubbles
+    "19": "+",  # pyramids
+    "20": "+",  # turned pyramids
+    "21": "+",  # plus
+    "22": "-",  # minus
+    "23": "/",  # 22.5 degree down
+    "24": "\\",  # 22.5 degree up
+    "25": "//",  # 67.5 degree down
+    "26": "\\\\",  # 67.5 degree up
+    "27": "x",  # 22.5 cross hatched
+    "28": "x",  # zig zag
+    "29": "x",  # sine
+    "30": "+",  # special pattern for light heavy dithering
+    "31": "+",  # special pattern for light frame dithering
+    "32": "||",  # vertical dense
+    "33": "|",  # vertical
+    "34": "||",  # vertical thick
+    "35": "|",  # vertical sparse
+    "36": "|",  # vertical sparse, thick
+    "37": "=",  # horizontal dense
+    "38": "-",  # horizontal
+    "39": "=",  # horizontal thick
+    "40": "-",  # horizontal
+    "41": "-",  # horizontal
+    "42": "++",  # grid dense
+    "43": "+",  # grid
+    "44": "++",  # grid thick
+    "45": "+",  # grid sparse
+    "46": "+",  # grid sparse, thick
+}
 
 
 def hex_to_rgba(color):
@@ -46,51 +99,53 @@ colors = {
 }
 
 extra = [
-    ((2, 1), "LN_RIDGE_P", "#45099e18"),
-    ((31, 0), "ALIGN", "#d4467c18"),
-    ((50, 1), "ERROR", "#c7031c18"),
-    ((201, 0), "DOC", "#857b7518"),
-    ((990, 0), "WAFER", "#47332818"),
+    ((31, 0), "ALIGN", "#d4467c18", ":"),
+    ((50, 1), "ERROR", "#c7031c18", "xx"),
+    ((201, 0), "DOC", "#857b7518", "++"),
+    ((990, 0), "WAFER", "#47332818", "hollow"),
 ]
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         raise RuntimeError(
-            "Please run the script providing the path the layer properties file: python layer_converter <PATH_TO_LYP_FILE>"
+            "Please run the script providing the path the layer properties file: lnoi400.lyp"
         )
 
     tree = et.parse(sys.argv[1])
     root = tree.getroot()
 
-    output = (
-        pathlib.Path(__file__).parent / "luxtelligence_lnoi400_forge" / "_layers.py"
-    ).resolve()
-    with open(output, "w", encoding="utf-8") as file:
-        layers = {}
-        for prop in root.findall("properties"):
-            text = prop.find("source").text
-            if text == "*/*":
-                continue
-            j = text.find("/")
-            k = j + text[j:].find("@")
-            layer = (int(text[:j]), int(text[j + 1 : k]))
-            color = colors.get(layer) or prop.find("fill-color").text + "18"
-            description = descriptions[layer]
+    layers = {}
+    for prop in root.findall("properties"):
+        text = prop.find("source").text
+        if text == "*/*":
+            continue
+        j = text.find("/")
+        k = j + text[j:].find("@")
+        layer = (int(text[:j]), int(text[j + 1 : k]))
+        color = prop.find("fill-color").text + "18"
+        key = prop.find("dither-pattern").text
+        key = layer if key is None else key[1:]
+        pattern = patterns.get(key, "")
+        description = descriptions[layer]
 
-            name = prop.find("name").text.strip()
-            layers[layer] = f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}),\n"
+        name = prop.find("name").text.strip()
+        layers[layer] = (
+            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}),"
+        )
 
-        for layer, name, color in extra:
-            assert layer not in layers
-            description = descriptions[layer]
-            layers[layer] = f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}),\n"
+    for layer, name, color, pattern in extra:
+        assert layer not in layers
+        description = descriptions[layer]
+        layers[layer] = (
+            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}),"
+        )
 
-        lines = [
-            "import photonforge as pf\n\n",
-            "_layers = {\n",
-        ] + [v for _, v in sorted(layers.items())]
-        lines.append("}\n")
-        file.writelines(lines)
-        subprocess.run(["ruff", "format", output], check=True)
+    lines = [
+        "import photonforge as pf",
+        "_layers = {",
+    ] + [v for _, v in sorted(layers.items())]
+    lines.append("}")
+
+    output = pathlib.Path(__file__).parent / "luxtelligence_lnoi400_forge" / "_layers.py"
+    output.write_text("\n".join(lines))
+    subprocess.run(["ruff", "format", output], check=True)

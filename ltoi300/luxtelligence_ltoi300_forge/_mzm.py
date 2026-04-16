@@ -11,33 +11,62 @@ from ._mmi import mmi1x2_cband, mmi1x2_oband, mmi2x2_cband, mmi2x2_oband
 @pf.parametric_component
 def s_bend_spline(
     *,
-    port_spec: pf.PortSpec | str,
+    port_spec: str | pf.PortSpec,
     length: pft.PositiveDimension,
     offset: pft.Coordinate,
-    technology: pf.Technology | None,
+    straight_length: pft.Dimension,
+    technology: pf.Technology | None = None,
     name: str = "",
+    model: pf.Model | None = pf.Tidy3DModel(),
 ) -> pf.Component:
-    c = pf.Component(name, technology)
+    """S-bend waveguide section.
+
+    Args:
+        port_spec: Port specification describing waveguide cross-section.
+        length: Horizontal extent of the bend.
+        offset: Vertical offset of the bend.
+        straight_length: Horizontal extent of straight segments at bend
+          input and output.
+        technology: Component technology. If ``None``, the default
+          technology is used.
+        name: Component name.
+        model: Model to be used with this component.
+
+    Returns:
+        Component with the S-bend, ports, and model.
+    """
+    if technology is None:
+        technology = pf.config.default_technology
+        if "LTOI300" not in technology.name:
+            warn(
+                f"Current default technology {technology.name} does not seem supported by the "
+                "Luxtelligence LTOI300 component library.",
+                RuntimeWarning,
+                1,
+            )
+    if isinstance(port_spec, str):
+        port_spec = technology.ports[port_spec]
+
+    c = pf.Component(name, technology=technology)
     c.properties.__thumbnail__ = "s-bend"
 
-    length = pf.snap_to_grid(length)
-    offset = pf.snap_to_grid(offset)
-    s_shape = pf.Expression(
-        "u",
-        [
-            ("v", "u^2 * (3 - 2 * u)"),
-            ("dv", "6 * u * (1 - u)"),
-            ("x", f"{length} * u"),
-            ("y", f"{offset} * v"),
-            ("dx", f"{length}"),
-            ("dy", f"{offset} * dv"),
-        ],
-    )
+    length = abs(length)
+    straight_length = abs(straight_length)
+    endpoint = pf.snap_to_grid((length + 2 * straight_length, offset))
+
     for layer, path in port_spec.get_paths((0, 0)):
-        c.add(layer, path.parametric(s_shape))
+        if straight_length > 0:
+            path.segment((straight_length, 0))
+        path.bezier([(length / 3, 0), (length * 2 / 3, offset), (length, offset)], relative=True)
+        if straight_length > 0:
+            path.segment(endpoint)
+        c.add(layer, path)
 
     c.add_port(pf.Port((0, 0), 0, port_spec))
-    c.add_port(pf.Port((length, offset), 180, port_spec, inverted=True))
+    c.add_port(pf.Port(endpoint, 180, port_spec, inverted=True))
+
+    if model is not None:
+        c.add_model(model)
 
     return c
 
@@ -176,6 +205,7 @@ def optical_combiner(
         port_spec=opt_spec,
         length=s_bend_length,
         offset=s_bend_offset,
+        straight_length=0,
         technology=technology,
     )
     top_arm = c.add_reference(s_bend).connect("P0", top_arm["P1"])

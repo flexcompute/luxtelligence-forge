@@ -69,6 +69,11 @@ with smooth boundaries.
 
 ## Changelog
 
+### 2.0.0 - Unreleased
+
+- Updated to the latest PDK version.
+- Rewrote the component library to align with the modular LTOI300.
+
 ### 1.4.0 - 2025-12-12
 
 - Added `eo_phase_shifter_high_speed` and `mz_modulator_unbalanced_high_speed`.
