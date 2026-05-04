@@ -63,8 +63,9 @@ with smooth boundaries.
 
 ## Changelog
 
-### Unreleased
+### 2.1.0 - 2026-05-04
 
+- Updated to PDK version 2.1.0.
 - Added missing thumbnails for LTOI300 MZM components.
 - Added phase shifter components and updated MZM implementations.
 

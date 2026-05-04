@@ -133,7 +133,7 @@ def lnoi400(
     # default T-rail full height
     t_height = 3
 
-    technology = pf.Technology("LNOI400", "1.4.0", layers, extrusion_specs, {}, opening)
+    technology = pf.Technology("LNOI400", "2.1.0", layers, extrusion_specs, {}, opening)
     technology.ports = {
         "RWG1000": pf.PortSpec(
             description="LN single mode ridge waveguide for C-band, TE mode",

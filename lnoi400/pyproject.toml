@@ -1,6 +1,6 @@
 [project]
 name = "luxtelligence-lnoi400-forge"
-version = "1.4.0"
+version = "2.1.0"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LNOI400 PDK implementation for PhotonForge"
 readme = "README.md"
@@ -10,8 +10,8 @@ dependencies = ["photonforge >= 1.4.0"]
 test = ["pytest >= 7.2"]
 
 [project.urls]
-homepage = "https://github.com/flexcompute/luxtelligence-lnoi400-forge"
-documentation = "https://github.com/flexcompute/luxtelligence-lnoi400-forge"
+homepage = "https://github.com/flexcompute/luxtelligence-forge"
+documentation = "https://github.com/flexcompute/luxtelligence-forge"
 
 [tool.setuptools]
 packages = ["luxtelligence_lnoi400_forge"]

@@ -2,7 +2,7 @@ from .utils import place_edge_couplers  # noqa: F401
 from .technology import lnoi400
 from . import component
 
-__version__ = "1.4.0"
+__version__ = "2.1.0"
 
 component_names = tuple(sorted(n for n in dir(component) if not n.startswith("_")))
 

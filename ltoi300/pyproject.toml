@@ -1,6 +1,6 @@
 [project]
 name = "luxtelligence-ltoi300-forge"
-version = "1.0.0"
+version = "2.1.0"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LTOI300 PDK implementation for PhotonForge"
 readme = "README.md"
@@ -9,9 +9,9 @@ dependencies = ["photonforge >= 1.4.0"]
 [project.optional-dependencies]
 test = ["pytest >= 7.2"]
 
-# [project.urls]
-# homepage = "https://github.com/flexcompute/luxtelligence-ltoi300-forge"
-# documentation = "https://github.com/flexcompute/luxtelligence-ltoi300-forge"
+[project.urls]
+homepage = "https://github.com/flexcompute/luxtelligence-forge"
+documentation = "https://github.com/flexcompute/luxtelligence-forge"
 
 [tool.setuptools]
 packages = ["luxtelligence_ltoi300_forge"]

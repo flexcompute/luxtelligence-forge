@@ -201,7 +201,7 @@ def ltoi300(
         pf.ExtrusionSpec(slab_etch_mask, sio2, (0, lt_thickness), -sidewall_angle),
     ]
 
-    technology = pf.Technology("LTOI300", "1.0.0", layers, extrusion_specs, {}, opening)
+    technology = pf.Technology("LTOI300", "2.1.0", layers, extrusion_specs, {}, opening)
     technology.ports = {
         "RWG900": pf.PortSpec(
             description="LT single mode rib for C band",
