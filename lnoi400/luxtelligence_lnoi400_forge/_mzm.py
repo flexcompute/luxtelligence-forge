@@ -336,5 +336,5 @@ def mzm_unbalanced_high_speed(
         name=name,
         model=model,
     )
-    c.name = ""
+    c.name = name
     return c

@@ -1,4 +1,5 @@
 import shutil
+from argparse import ArgumentParser
 
 from tidy3d.config import get_manager
 
@@ -29,7 +30,7 @@ def create_library():
             print("Library already exists: " + str(lib))
             return
 
-    components = [getattr(lxt.component, n)() for n in lxt.component_names]
+    components = [getattr(lxt.component, n)(name=n) for n in lxt.component_names]
 
     project = pda.create_project(
         name=name,
@@ -64,7 +65,16 @@ def create_library():
 
 
 if __name__ == "__main__":
-    pda.init("http://localhost:3030", "ws://localhost:3030")
+    parser = ArgumentParser(prog=__file__)
+    parser.add_argument("--profile", default=None, help="tidy3d configuration profile")
+    args = parser.parse_args()
+
+    profile = args.profile
+    if args.profile is not None:
+        get_manager().switch_profile(args.profile)
+
+    pda.init()
+
     try:
         create_library()
     finally:

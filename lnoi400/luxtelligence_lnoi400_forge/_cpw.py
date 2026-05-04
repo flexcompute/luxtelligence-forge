@@ -194,7 +194,7 @@ def trail_cpw(
     c.parametric_kwargs = None
     c.random_variables = None
     c.properties.__thumbnail__ = "tl"
-    c.name = ""
+    c.name = name
 
     if isinstance(port_spec, str):
         port_spec = c.technology.ports[port_spec]
