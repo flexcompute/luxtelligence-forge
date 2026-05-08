@@ -3,7 +3,7 @@ name: LTOI300 Package Builder
 on:
   push:
     tags:
-      - 'ltoi300-v*.*'
+      - 'v*.*'
   workflow_dispatch:
 
 jobs:

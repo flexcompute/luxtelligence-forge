@@ -3,7 +3,7 @@ name: LNOI400 Package Builder
 on:
   push:
     tags:
-      - 'lnoi400-v*.*'
+      - 'v*.*'
   workflow_dispatch:
 
 jobs:
