@@ -63,7 +63,7 @@ with smooth boundaries.
 
 ## Changelog
 
-### 2.1.0 - 2026-05-04
+### 2.1.0 - 2026-05-08
 
 - Updated to PDK version 2.1.0.
 - Added missing thumbnails for LTOI300 MZM components.

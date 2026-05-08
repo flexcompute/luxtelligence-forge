@@ -69,7 +69,7 @@ with smooth boundaries.
 
 ## Changelog
 
-### 2.1.0 - 2026-05-04
+### 2.1.0 - 2026-05-08
 
 - Updated to PDK version 2.1.0.
 - Rewrote the component library to align with the modular LTOI300.
