@@ -8,8 +8,6 @@ from photonforge import pda
 
 import luxtelligence_ltoi300_forge as lxt
 
-get_manager().switch_profile("dev")
-
 
 def fix_function(obj, project):
     if obj.parametric_function is not None:
