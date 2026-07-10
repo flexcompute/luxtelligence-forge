@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build wheels on manylinux2014
+    name: Build wheels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
