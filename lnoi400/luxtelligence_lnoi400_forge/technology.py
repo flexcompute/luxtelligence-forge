@@ -31,6 +31,49 @@ ln_e_fit = td.PoleResidue(
     ),
 )
 
+_sio2 = {
+    "optical": td.material_library["SiO2"]["Palik_LowLoss"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+    ),
+    "electrical": td.Medium(
+        permittivity=3.9, name="SiO2", viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+    ),
+}
+_si = {
+    "optical": td.material_library["cSi"]["Li1993_293K"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#060534")
+    ),
+    "electrical": td.Medium(
+        permittivity=11.7, name="Si", viz_spec=td.VisualizationSpec(facecolor="#060534")
+    ),
+}
+_ln = {
+    "optical": td.AnisotropicMedium(
+        xx=ln_o_fit,
+        yy=ln_e_fit,
+        zz=ln_o_fit,
+        viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
+    ),
+    "electrical": td.AnisotropicMedium(
+        xx=td.Medium(permittivity=38),
+        yy=td.Medium(permittivity=28),
+        zz=td.Medium(permittivity=38),
+        viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
+    ),
+}
+_metal = {
+    "optical": td.material_library["Au"]["Olmon2012evaporated"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#f8b50c")
+    ),
+    "electrical": td.LossyMetalMedium(
+        conductivity=41,
+        frequency_range=[0.1e9, 100e9],
+        fit_param=td.SurfaceImpedanceFitterParam(max_num_poles=16),
+        viz_spec=td.VisualizationSpec(facecolor="#f8b50c"),
+    ),
+}
+_open = td.Medium(permittivity=1.0, name="Opening")
+
 
 @pf.parametric_technology
 def lnoi400(
@@ -41,48 +84,11 @@ def lnoi400(
     box_thickness: pft.PositiveDimension = 4.7,
     tl_thickness: pft.PositiveDimension = 0.9,
     tl_separation: pft.PositiveDimension = 1,
-    sio2: _Medium = {
-        "optical": td.material_library["SiO2"]["Palik_Lossless"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
-        ),
-        "electrical": td.Medium(
-            permittivity=3.9, name="SiO2", viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
-        ),
-    },
-    si: _Medium = {
-        "optical": td.material_library["cSi"]["Li1993_293K"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#060534")
-        ),
-        "electrical": td.Medium(
-            permittivity=11.7, name="Si", viz_spec=td.VisualizationSpec(facecolor="#060534")
-        ),
-    },
-    ln: dict[str, pft.Medium] = {
-        "optical": td.AnisotropicMedium(
-            xx=ln_o_fit,
-            yy=ln_e_fit,
-            zz=ln_o_fit,
-            viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
-        ),
-        "electrical": td.AnisotropicMedium(
-            xx=td.Medium(permittivity=38),
-            yy=td.Medium(permittivity=28),
-            zz=td.Medium(permittivity=38),
-            viz_spec=td.VisualizationSpec(facecolor="#dd2f62"),
-        ),
-    },
-    metal: dict[str, pft.Medium] = {
-        "optical": td.material_library["Au"]["Olmon2012evaporated"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#f8b50c")
-        ),
-        "electrical": td.LossyMetalMedium(
-            conductivity=41,
-            frequency_range=[0.1e9, 100e9],
-            fit_param=td.SurfaceImpedanceFitterParam(max_num_poles=16),
-            viz_spec=td.VisualizationSpec(facecolor="#f8b50c"),
-        ),
-    },
-    opening: pft.Medium = td.Medium(permittivity=1.0, name="Opening"),
+    sio2: _Medium = _sio2,
+    si: _Medium = _si,
+    ln: dict[str, pft.Medium] = _ln,
+    metal: dict[str, pft.Medium] = _metal,
+    opening: pft.Medium = _open,
 ) -> pf.Technology:
     """Create a technology for the LNOI400 PDK.
 

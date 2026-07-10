@@ -28,6 +28,58 @@ _litao3_e = td.PoleResidue(
     frequency_range=(75e12, 650e12),
 )
 
+_sio2 = {
+    "optical": td.material_library["SiO2"]["Palik_LowLoss"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+    ),
+    "electrical": td.Medium(
+        permittivity=3.9, name="SiO2", viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
+    ),
+}
+_si = {
+    "optical": td.material_library["cSi"]["Li1993_293K"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#060534")
+    ),
+    "electrical": td.Medium(
+        permittivity=11.7, name="Si", viz_spec=td.VisualizationSpec(facecolor="#060534")
+    ),
+}
+_lt = {
+    "optical": td.AnisotropicMedium(
+        xx=_litao3_o,
+        yy=_litao3_e,
+        zz=_litao3_o,
+        viz_spec=td.VisualizationSpec(facecolor="#5d179a"),
+    ),
+    "electrical": td.AnisotropicMedium(
+        xx=td.Medium(permittivity=51),
+        yy=td.Medium(permittivity=44),
+        zz=td.Medium(permittivity=51),
+        viz_spec=td.VisualizationSpec(facecolor="#5d179a"),
+    ),
+}
+_metal = {
+    "optical": td.material_library["Au"]["JohnsonChristy1972"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#f8b50c")
+    ),
+    "electrical": td.LossyMetalMedium(
+        conductivity=41,
+        frequency_range=[0.1e9, 300e9],
+        viz_spec=td.VisualizationSpec(facecolor="#f8b50c"),
+    ),
+}
+_hr_metal = {
+    "optical": td.material_library["Pt"]["Werner2009"].updated_copy(
+        viz_spec=td.VisualizationSpec(facecolor="#778195")
+    ),
+    "electrical": td.LossyMetalMedium(
+        conductivity=7.252,
+        frequency_range=[0.1e9, 100e9],
+        viz_spec=td.VisualizationSpec(facecolor="#778195"),
+    ),
+}
+_open = td.Medium(permittivity=1.0, name="Opening")
+
 
 @pf.parametric_technology
 def ltoi300(
@@ -43,57 +95,12 @@ def ltoi300(
     m2_oxide_thickness: pft.PositiveDimension = 0.3,
     box_thickness: pft.PositiveDimension = 7.0,
     via_sidewall_angle: pft.Angle = 45,
-    sio2: _Medium = {
-        "optical": td.material_library["SiO2"]["Palik_Lossless"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
-        ),
-        "electrical": td.Medium(
-            permittivity=3.9, name="SiO2", viz_spec=td.VisualizationSpec(facecolor="#8dc2f7")
-        ),
-    },
-    si: _Medium = {
-        "optical": td.material_library["cSi"]["Li1993_293K"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#060534")
-        ),
-        "electrical": td.Medium(
-            permittivity=11.7, name="Si", viz_spec=td.VisualizationSpec(facecolor="#060534")
-        ),
-    },
-    lt: _Medium = {
-        "optical": td.AnisotropicMedium(
-            xx=_litao3_o,
-            yy=_litao3_e,
-            zz=_litao3_o,
-            viz_spec=td.VisualizationSpec(facecolor="#5d179a"),
-        ),
-        "electrical": td.AnisotropicMedium(
-            xx=td.Medium(permittivity=51),
-            yy=td.Medium(permittivity=44),
-            zz=td.Medium(permittivity=51),
-            viz_spec=td.VisualizationSpec(facecolor="#5d179a"),
-        ),
-    },
-    metal: _Medium = {
-        "optical": td.material_library["Au"]["JohnsonChristy1972"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#f8b50c")
-        ),
-        "electrical": td.LossyMetalMedium(
-            conductivity=41,
-            frequency_range=[0.1e9, 300e9],
-            viz_spec=td.VisualizationSpec(facecolor="#f8b50c"),
-        ),
-    },
-    hr_metal: _Medium = {
-        "optical": td.material_library["Pt"]["Werner2009"].updated_copy(
-            viz_spec=td.VisualizationSpec(facecolor="#778195")
-        ),
-        "electrical": td.LossyMetalMedium(
-            conductivity=7.252,
-            frequency_range=[0.1e9, 100e9],
-            viz_spec=td.VisualizationSpec(facecolor="#778195"),
-        ),
-    },
-    opening: pft.Medium = td.Medium(permittivity=1.0, name="Opening"),
+    sio2: _Medium = _sio2,
+    si: _Medium = _si,
+    lt: _Medium = _lt,
+    metal: _Medium = _metal,
+    hr_metal: _Medium = _hr_metal,
+    opening: pft.Medium = _open,
 ) -> pf.Technology:
     """Create a technology for the LTOI300 PDK.
 
