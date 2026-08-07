@@ -412,7 +412,7 @@ def base_mzm(
     comb1 = c.add_reference(comb).connect(comb_port, pad0["P3"])
 
     c.add_terminal(pad0["signal"], "signal_l")
-    c.add_terminal(pad0["gnd_b"], "gnd_tl")
+    c.add_terminal(pad0["gnd_b"], "gnd0_tl")
     c.add_terminal(pad0["gnd_t"], "gnd1_bl")
 
     if termination is not None:

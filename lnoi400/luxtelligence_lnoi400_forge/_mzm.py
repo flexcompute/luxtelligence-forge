@@ -4,7 +4,7 @@ import photonforge as pf
 import photonforge.typing as pft
 
 from ._bends import l_bend, s_bend_spline
-from ._cpw import trail_cpw, cpw_pad_linear
+from ._cpw import cpw_pad_linear, trail_cpw
 from ._eo_phase_shifter import eo_phase_shifter
 from ._heater import heated_straight
 from ._mmi import mmi1x2_optimized1550
@@ -218,9 +218,9 @@ def mzm_unbalanced(
 
     if with_heater:
         if length_imbalance > 0:
-            c.add_terminal({"heater_0": top_bias["T0"], "heater_1": top_bias["T1"]})
+            c.add_terminal({"heater_0": top_bias["htr_l"], "heater_1": top_bias["htr_r"]})
         else:
-            c.add_terminal({"heater_0": bot_bias["T0"], "heater_1": bot_bias["T1"]})
+            c.add_terminal({"heater_0": bot_bias["htr_l"], "heater_1": bot_bias["htr_r"]})
 
     if draw_cpw:
         pad = cpw_pad_linear(

@@ -52,6 +52,18 @@ def test_components():
         _ = func(technology=technology)
 
 
+def test_mzm_heater_terminals():
+    technology = lxt.lnoi400()
+    for length_imbalance in (-100.0, 100.0):
+        component = lxt.component.mzm_unbalanced(
+            technology=technology,
+            length_imbalance=length_imbalance,
+            with_heater=True,
+            draw_cpw=False,
+        )
+        assert set(component.terminals) == {"heater_0", "heater_1"}
+
+
 def test_defaults(request):
     pf.config.default_technology = lxt.lnoi400()
     components = {

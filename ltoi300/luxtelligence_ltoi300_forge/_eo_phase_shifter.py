@@ -114,7 +114,7 @@ def base_eo_phase_shifter(
     c.add_port(pad0["P1"])
 
     c.add_terminal(pad0["signal"], "signal_l")
-    c.add_terminal(pad0["gnd_b"], "gnd_tl")
+    c.add_terminal(pad0["gnd_b"], "gnd0_tl")
     c.add_terminal(pad0["gnd_t"], "gnd1_bl")
 
     if termination is not None:
