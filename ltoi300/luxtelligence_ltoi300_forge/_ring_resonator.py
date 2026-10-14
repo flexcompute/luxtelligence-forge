@@ -146,7 +146,6 @@ _multimode_ring_o = pf.PortSpec(
     width=4,
     limits=(-1.2, 1.5),
     num_modes=3,
-    target_neff=2.2,
     path_profiles=((1.5, 0, (2, 10)), (12 + 1.5, 0, (3, 10))),
     default_radius=200,
 )
@@ -259,7 +258,6 @@ _multimode_ring_c = pf.PortSpec(
     width=5,
     limits=(-1.4, 1.7),
     num_modes=3,
-    target_neff=2.2,
     path_profiles=((1.5, 0, (2, 10)), (12 + 1.5, 0, (3, 10))),
     default_radius=200,
 )

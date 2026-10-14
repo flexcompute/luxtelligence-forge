@@ -139,14 +139,15 @@ def lnoi400(
     # default T-rail full height
     t_height = 3
 
-    technology = pf.Technology("LNOI400", "2.1.0", layers, extrusion_specs, {}, opening)
+    technology = pf.Technology(
+        "LNOI400", "2.1.0", layers, extrusion_specs, {}, opening, connected_layers=[("TL", "HT")]
+    )
     technology.ports = {
         "RWG1000": pf.PortSpec(
             description="LN single mode ridge waveguide for C-band, TE mode",
             width=5,
             limits=rwg_port_limits,
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((1, 0, (2, 0)), (10, 0, (3, 0))),
         ),
         "RWG3000": pf.PortSpec(
@@ -154,7 +155,6 @@ def lnoi400(
             width=8,
             limits=rwg_port_limits,
             num_modes=5,
-            target_neff=2.2,
             path_profiles=((3, 0, (2, 0)), (12, 0, (3, 0))),
         ),
         "SWG250": pf.PortSpec(
@@ -162,22 +162,16 @@ def lnoi400(
             width=10,
             limits=swg_port_limits,
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((0.25, 0, (3, 0)), (12, 0, (3, 1))),
         ),
-        "UniCPW": pf.cpw_spec(
-            (21, 0), 15, 5, 250, added_solver_modes=0, target_neff=2.2, technology=technology
-        ),
-        "UniCPW-EO": pf.cpw_spec(
-            (21, 0), 10, 4, 180, added_solver_modes=0, target_neff=2.2, technology=technology
-        ),
+        "UniCPW": pf.cpw_spec((21, 0), 15, 5, 250, added_solver_modes=0, technology=technology),
+        "UniCPW-EO": pf.cpw_spec((21, 0), 10, 4, 180, added_solver_modes=0, technology=technology),
         "UniCPW-HS": pf.cpw_spec(
             (21, 0),
             21,
             4 + 2 * t_height,
             180,
             added_solver_modes=0,
-            target_neff=2.2,
             technology=technology,
         ),
     }

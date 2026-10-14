@@ -156,10 +156,7 @@ def ltoi300(
         # M2
         pf.ExtrusionSpec(v2_mask, metal, (z_m1_top, z_m1_top + m2_thickness)),
         pf.ExtrusionSpec(
-            m2_mask - m1_mask - hrm_mask,
-            metal,
-            (z_m1_top, z_m2 + m2_thickness),
-            via_sidewall_angle,
+            m2_mask - m1_mask - hrm_mask, metal, (z_m1_top, z_m2 + m2_thickness), via_sidewall_angle
         ),
         pf.ExtrusionSpec(
             m2_mask * m1_mask - v2_mask,
@@ -208,14 +205,26 @@ def ltoi300(
         pf.ExtrusionSpec(slab_etch_mask, sio2, (0, lt_thickness), -sidewall_angle),
     ]
 
-    technology = pf.Technology("LTOI300", "2.1.0", layers, extrusion_specs, {}, opening)
+    technology = pf.Technology(
+        "LTOI300",
+        "2.1.0",
+        layers,
+        extrusion_specs,
+        {},
+        opening,
+        connected_layers=[
+            ("M1", "VIA_M1_M2"),
+            ("VIA_M1_M2", "M2"),
+            ("M2", "VIA_M2_HRL"),
+            ("HRL", "VIA_M2_HRL"),
+        ],
+    )
     technology.ports = {
         "RWG900": pf.PortSpec(
             description="LT single mode rib for C band",
             width=4,
             limits=(-1.7 + lt_thickness, 1.7),
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((0.9, 0, (2, 10)), (12 + 0.9, 0, (3, 10))),
             default_radius=50,
         ),
@@ -224,7 +233,6 @@ def ltoi300(
             width=4,
             limits=(-1.5 + lt_thickness, 1.5),
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((0.7, 0, (2, 10)), (12 + 0.7, 0, (3, 10))),
             default_radius=60,
         ),
@@ -233,7 +241,6 @@ def ltoi300(
             width=8,
             limits=(-2 + lt_thickness, 2),
             num_modes=4,
-            target_neff=2.2,
             path_profiles=((2.5, 0, (2, 10)), (12 + 2.5, 0, (3, 10))),
             default_radius=50,
         ),
@@ -242,7 +249,6 @@ def ltoi300(
             width=18,
             limits=(-box_thickness, oxide_thickness + 0.5),
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((0.35, 0, (3, 10)), (20, 0, (3, 11))),
             default_radius=10,
         ),
@@ -251,7 +257,6 @@ def ltoi300(
             width=12,
             limits=(-5, oxide_thickness + 0.5),
             num_modes=1,
-            target_neff=2.2,
             path_profiles=((0.5, 0, (3, 10)), (20, 0, (3, 11))),
             default_radius=10,
         ),
@@ -261,7 +266,6 @@ def ltoi300(
             5,
             50,
             added_solver_modes=0,
-            target_neff=2.2,
             conductor_limits=(slab_thickness, z_m1_top),
             technology=technology,
         ),
@@ -271,7 +275,6 @@ def ltoi300(
             5.5,
             50,
             added_solver_modes=0,
-            target_neff=2.2,
             conductor_limits=(slab_thickness, z_m1_top),
             technology=technology,
         ),
@@ -281,7 +284,6 @@ def ltoi300(
             5.5,
             50,
             added_solver_modes=0,
-            target_neff=2.2,
             conductor_limits=(slab_thickness, z_m1_top),
             technology=technology,
         ),

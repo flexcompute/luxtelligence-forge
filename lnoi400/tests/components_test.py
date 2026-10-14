@@ -6,7 +6,6 @@ ps1 = pf.PortSpec(
     width=5,
     limits=(-1.5, 1.9),
     num_modes=1,
-    target_neff=2.2,
     path_profiles=((0.2, 0, (2, 0)), (10, 0, (3, 0))),
 )
 
@@ -15,7 +14,6 @@ ps2 = pf.PortSpec(
     width=5,
     limits=(-1.5, 1.9),
     num_modes=1,
-    target_neff=2.2,
     path_profiles=((0.3, 0, (2, 0)), (10, 0, (3, 0))),
 )
 

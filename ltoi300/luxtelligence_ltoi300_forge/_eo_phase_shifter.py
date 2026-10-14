@@ -107,7 +107,7 @@ def base_eo_phase_shifter(
         )
 
     c = pf.Component(name, technology)
-    c.properties.__thumbnail__ = "eo-ps"
+    c.properties.__thumbnail__ = "eo_ps"
 
     cpw_ref = c.add_reference(cpw)
     pad0 = c.add_reference(pad).mirror().connect("E0", cpw_ref["E0"])

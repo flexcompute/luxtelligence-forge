@@ -3,6 +3,37 @@ import subprocess
 import sys
 import xml.etree.ElementTree as et
 
+# Electrical roles and DRC minimums per layer name (LXT MPW design manual 1.4, table 2).
+_CONDUCTIVE = {
+    "TL",
+}
+_DEVICE_MARKER = set()
+_MIN_RULES = {
+    "ALIGN": (0.25, 0.3),
+    "HT": (0.8, 1.0),
+    "LABELS": (0.25, 0.3),
+    "LN_RIDGE": (0.25, 0.3),
+    "LN_SLAB": (0.25, None),
+    "LT_RIDGE_PERIODIC": (0.25, 0.3),
+    "SLAB_NEGATIVE": (None, 0.25),
+    "TL": (0.8, 1.0),
+}  # name: (min_width, min_spacing)
+
+
+def _extra_kwargs(name):
+    """Extra pf.LayerSpec keyword arguments for a layer name."""
+    extra = ""
+    if name in _CONDUCTIVE:
+        extra += ", conductive=True"
+    if name in _DEVICE_MARKER:
+        extra += ", device_marker=True"
+    width, spacing = _MIN_RULES.get(name, (None, None))
+    if width is not None:
+        extra += f", min_width={width}"
+    if spacing is not None:
+        extra += f", min_spacing={spacing}"
+    return extra
+
 
 # Klayout patterns
 patterns = {
@@ -130,14 +161,14 @@ if __name__ == "__main__":
 
         name = prop.find("name").text.strip()
         layers[layer] = (
-            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}),"
+            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}{_extra_kwargs(name)}),"
         )
 
     for layer, name, color, pattern in extra:
         assert layer not in layers
         description = descriptions[layer]
         layers[layer] = (
-            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}),"
+            f"\t{name!r} : pf.LayerSpec({layer}, {description!r}, {color!r}, {pattern!r}{_extra_kwargs(name)}),"
         )
 
     lines = [
