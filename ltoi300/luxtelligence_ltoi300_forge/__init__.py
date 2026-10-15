@@ -1,7 +1,7 @@
-from .technology import ltoi300
 from . import component
+from .technology import ltoi300
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 component_names = tuple(sorted(n for n in dir(component) if not n.startswith("_")))
 

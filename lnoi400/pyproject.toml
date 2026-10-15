@@ -1,6 +1,6 @@
 [project]
 name = "luxtelligence-lnoi400-forge"
-version = "2.1.0"
+version = "2.1.1"
 authors = [{name = "Flexcompute Inc.", email = "info@flexcompute.com"}]
 description = "Luxtelligence LNOI400 PDK implementation for PhotonForge"
 readme = "README.md"

@@ -1,8 +1,9 @@
 from typing import Literal
 
-import tidy3d as td
 import photonforge as pf
 import photonforge.typing as pft
+import tidy3d as td
+
 from ._layers import _layers
 
 _Medium = pft.Medium | dict[Literal["optical", "electrical"], pft.Medium]
@@ -207,7 +208,7 @@ def ltoi300(
 
     technology = pf.Technology(
         "LTOI300",
-        "2.1.0",
+        "2.1.1",
         layers,
         extrusion_specs,
         {},
