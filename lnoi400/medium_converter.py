@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import tidy3d as td
 from tidy3d.plugins.dispersion import FastDispersionFitter, AdvancedFastFitterParam
 
-td.config.logging_level = "ERROR"
+td.config.logging.level = "ERROR"
 
 
 def fit(name, lda, n_data, eps_inf=None):
